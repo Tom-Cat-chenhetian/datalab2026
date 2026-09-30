@@ -28,16 +28,10 @@ test 截图：
 
 ![test 结果](imgs/test.png)
 
-<!-- TODO: 在 Linux 上执行 make && python3 test.py -V，把输出截图保存为 report/imgs/test.png -->
-
 ## 解题报告
 
 ### 亮点
 
-1. **float\_i2f** —— 三部分（取绝对值、规格化、舍入）都写全了，包括最容易漏的"就近舍入到偶"和 `INT_MIN` 取绝对值时的溢出。
-2. **leftBitCount** —— 先把它化成"数 `~x` 的前导 0"，再二分定位，33 个操作完成，两个边界（全 1 得 32、正数得 0）都单独处理了。
-3. **floatPower2** —— 完全不用浮点运算，直接由指数域拼出结果，9 个操作。
-4. **logicalShift / reverse / bitAnd** —— 分别是 6、5、4 个操作，基本是一行或一个循环解决。
 
 ### bitAnd
 
@@ -45,7 +39,7 @@ test 截图：
 return ~(~x | ~y);
 ```
 
-只给 `~` 和 `|`，那就是 De Morgan 律反过来用：`x & y = ~(~x | ~y)`。（4 / 7）
+只给 `~` 和 `|`，那就是德摩根律反过来用：`x & y = ~(~x | ~y)`。（4 / 7）
 
 ### bitXor
 
@@ -55,7 +49,7 @@ int b = ~(~x & ~y);
 return a & b;
 ```
 
-异或的含义是"至少有一个 1，但不同时为 1"，也就是 `x ^ y = (x | y) & ~(x & y)`。这里没有 `|`，把 `x | y` 换成 `~(~x & ~y)` 代进去即可。正好用满 7 个操作，拆成两个临时变量只是为了不漏括号。（7 / 7）
+异或的含义是 `x ^ y = (x | y) & ~(x & y)`。这里没有 `|`，把 `x | y` 换成 `~(~x & ~y)` 代进去即可。正好用满 7 个操作。（7 / 7）
 
 ### samesign
 
@@ -222,12 +216,10 @@ return (x + 127) << 23;           /* 指数域 = x + 127，尾数为 0 */
 
 ## 反馈/收获/感悟/总结
 
-这个 lab 的难点不在算法本身，而在约束：很多题只给几个运算符、操作数卡得很死，同一题还分"能不能用控制流"。我踩得最深的两个坑都在浮点题：一是 int 转 float 必须按"就近舍入到偶"，一开始写成"大于一半就进位"，在 `2^24 + 1` 这类正好一半的输入上差 1；二是 `INT_MIN` 取绝对值不能直接写 `-x`。另外，`btest` 只验证结果对不对，操作数和运算符是否合规要用 `test.py` 单独检查，这两件事是分开的。
+这个 lab 的难点在很多题只给几个运算符、操作数卡得很死，同一题还分"能不能用控制流"。但是我也学会了不控制流，利用类似二分法的位运算替代循环等
 
 ## 参考的重要资料
 
-1. Randal E. Bryant, David R. O'Hallaron. *Computer Systems: A Programmer's Perspective*，第 2 章 "Representing and Manipulating Information"。整数补码、移位语义以及 IEEE 754 单/双精度格式和舍入规则都参考了这一章，float\_i2f、floatScale2、float64\_f2i 的字段划分基本照它写。
-2. Sean Eron Anderson. *Bit Twiddling Hacks*. <https://graphics.stanford.edu/~seander/bithacks.html> —— 前导零/前导一的二分定位写法（leftBitCount 的思路来源）。
-3. *Single-precision floating-point format*. <https://en.wikipedia.org/wiki/Single-precision_floating-point_format> —— 单精度字段划分、指数偏置 127、最小非规格化数 2^-149 的对照，floatPower2 的边界 -126 / -149 参照这里。
-4. RUCICS Datalab 模板仓库. <https://github.com/RUCICS/Datalab-2025Fall> —— 题目、`btest`/`test.py` 测试脚本。
+1. Randal E. Bryant, David R. O'Hallaron. *Computer Systems: A Programmer's Perspective*，第 2 章 "Representing and Manipulating Information"。整数补码、移位语义以及 IEEE 754 单/双精度格式和舍入规则都参考了这本教材
+2. RUCICS Datalab 模板仓库. <https://github.com/RUCICS/Datalab-2025Fall> —— 题目、`btest`/`test.py` 测试脚本。
 
